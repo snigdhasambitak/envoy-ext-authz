@@ -1,0 +1,31 @@
+version: '3.7'
+
+services:
+  envoy:
+    build:
+      context: .
+      dockerfile: dockerfile
+    volumes:
+      - ./envoy.yaml:/etc/envoy.yaml
+    expose:
+      - "9000"
+      - "9001"
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    depends_on: 
+      - ext-authz
+      - server
+
+  ext-authz:
+    image: hanjunlee/ext-authz
+    command: "--header=foo=baz"
+    ports:
+      - 50051:50051
+
+  server:
+    build:
+      context: server
+      dockerfile: dockerfile
+    ports:
+      - 8000:8000
